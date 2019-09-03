@@ -4,7 +4,7 @@ proc my_add(a, b: int): int = a + b
 proc hook_add(a, b: int): int = a * b
 
 var
-  h = funchook_create()
+  h = initHook()
   rv: FUNCHOOK_ERROR
 
 if h == nil:
@@ -12,16 +12,16 @@ if h == nil:
 
 var add_func = my_add
 
-rv = funchook_prepare(h, addr add_func, hook_add)
+rv = h.prepare(addr add_func, hook_add)
 if rv != SUCCESS:
-  echo h.funchook_error_message()
+  echo h.errorMessage()
 
 echo "Before hook: ", my_add(4, 5)
 assert my_add(4, 5) == 9
 
-rv = funchook_install(h, 0)
+rv = h.install(0)
 if rv != SUCCESS:
-  echo h.funchook_error_message()
+  echo h.errorMessage()
 
 echo "After hook: ", my_add(4, 5)
 assert my_add(4, 5) == 20
