@@ -1,7 +1,13 @@
 import funchook
 
 proc my_add(a, b: int): int = a + b
-proc hook_add(a, b: int): int = a * b
+
+
+var add_func = my_add
+
+proc hook_add(a, b: int): int =
+  echo "original my_add called inside hook_add: ", add_func(a, b)
+  result = a * b
 
 var
   h = initHook()
@@ -10,18 +16,14 @@ var
 if h == nil:
   quit("create funchook failed")
 
-var add_func = my_add
-
 rv = h.prepare(addr add_func, hook_add)
 if rv != SUCCESS:
   echo h.errorMessage()
 
-echo "Before hook: ", my_add(4, 5)
-assert my_add(4, 5) == 9
+assert my_add(4, 5) == 9, "pre-hook"
 
 rv = h.install(0)
 if rv != SUCCESS:
   echo h.errorMessage()
 
-echo "After hook: ", my_add(4, 5)
-assert my_add(4, 5) == 20
+assert my_add(4, 5) == 20, "post-hook"
