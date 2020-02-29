@@ -3,12 +3,18 @@ import os
 when defined(FUNCHOOK_DYNAMIC_LINK):
   {.passL: "-lfunchook".}
 else:
+  #[
   const LIB_DIR = currentSourcePath().splitPath.head & "/private"
   when hostCPU == "i386":
     const SUFFIX = "32"
   else:
     const SUFFIX = "64"
   {.passL: "-L" & LIB_DIR & " -lfunchook" & SUFFIX.}
+]#
+
+  import private/wrapper
+  const LIB_DIR = currentSourcePath().splitPath.head & "/private/lib"
+  {.passL: "-static -L" & LIB_DIR & " -lfunchook -ldistorm".}
 
 {.pragma: fh, discardable, cdecl, importc.}
 
@@ -34,7 +40,7 @@ type
 converter toPointer*(x: int): pointer = cast[pointer](x)
 
 proc funchook_create*(): FuncHook {.fh.} ## Create a funchook handle, return nil when out-of-memory.
-proc funchook_prepare*(hook: FuncHook, src: ptr pointer, dst: pointer): FUNCHOOK_ERROR {.fh.} ## Prepare hooking
+proc funchook_prepare*(hook: FuncHook, src: pointer, dst: pointer): FUNCHOOK_ERROR {.fh.} ## Prepare hooking
 proc funchook_install*(hook: FuncHook, flags: int): FUNCHOOK_ERROR {.fh.} ## Install hooks prepared by funchook_prepare().
 proc funchook_uninstall*(hook: FuncHook, flags: int): FUNCHOOK_ERROR {.fh.} ## Uninstall hooks installed by funchook_install().
 proc funchook_destroy*(hook: FuncHook): FUNCHOOK_ERROR {.fh.} ## Destroy a funchook handle
@@ -43,7 +49,7 @@ proc funchook_set_debug_file*(name: cstring): FUNCHOOK_ERROR {.fh.} ## Set log f
 
 
 template initHook*(): FuncHook = funchook_create()
-template prepare*(fh: FuncHook, src: ptr any, dst: pointer): FUNCHOOK_ERROR = funchook_prepare(fh, cast[ptr pointer](src), dst)
+template prepare*(fh: FuncHook, src: pointer, dst: pointer): FUNCHOOK_ERROR = funchook_prepare(fh, src, dst)
 template install*(fh: FuncHook, flags = 0): FUNCHOOK_ERROR = funchook_install(fh, flags)
 template uninstall*(fh: FuncHook, flags = 0): FUNCHOOK_ERROR = funchook_uninstall(fh, flags)
 template destroy*(fh: FuncHook): FUNCHOOK_ERROR = funchook_destroy(fh)
