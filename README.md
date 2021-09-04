@@ -1,9 +1,13 @@
 # funchook.nim
-[funchook][] wrapper for [Nim][]
+[funchook](https://github.com/kubo/funchook) wrapper for [Nim](https://nim-lang.org)
 
-The project contains static libraries for Linux, for Windows and other OS please build `funchook` manually and enable `FUNCHOOK_DYNAMIC_LINK` switch
+This wrapper compiles funchook with diStorm3 disassembler.
 
-Note: need help to build static libraries for other OSes/compilers
+Suports both x64 and x86-64 on:
+
+[x] Linux
+[x] Windows
+[ ] MacOS (not tested yet)
 
 ### Installation
 ```shell
@@ -15,39 +19,29 @@ nimble install funchook
 ```nim
 import funchook
 
-proc my_add(a, b: int): int = a + b
+proc my_add(a, b: int): int =
   ## original proc to be hooked
+  a + b
 
 var add_func = my_add
 
 proc hook_add(a, b: int): int =
   ## proc to replace my_add
+  echo add_func(a, b) # call original proc with trampoline
+  a * b
 
-  # call original proc with trampoline
-  echo add_func(a, b)
-
-  result = a * b
-
-var
-  h = initHook()
-  rv: FUNCHOOK_ERROR
+var h = initHook()
 
 if h == nil:
   quit("Error: create funchook failed")
 
-rv = h.prepare(addr add_func, hook_add)
-if rv != SUCCESS:
+if h.prepare(addr add_func, hook_add) != SUCCESS:
   quit("Error: " & h.errorMessage())
 
 assert my_add(4, 5) == 9, "pre-hook"
 
-rv = h.install(0)
-if rv != SUCCESS:
+if h.install(0) != SUCCESS:
   quit("Error: " & h.errorMessage())
 
 assert my_add(4, 5) == 20, "post-hook"
 ```
-
-
-[Nim]: https://nim-lang.org
-[funchook]: https://github.com/kubo/funchook
