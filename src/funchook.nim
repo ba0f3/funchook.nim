@@ -3,11 +3,9 @@ import os, distorm3
 const PATH = currentSourcePath.splitPath.head
 
 when defined(windows):
-   const FUNCHOOK_OS = "windows"
-elif defined(linux):
-  const FUNCHOOK_OS = "unix"
+  const FUNCHOOK_OS = "windows"
 else:
-  {.error: "Unsupported OS".}
+  const FUNCHOOK_OS = "unix" 
 
 when hostCPU == "i386" or hostCPU == "amd64":
   const FUNCHOOK_CPU = "x86"
