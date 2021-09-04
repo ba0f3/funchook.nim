@@ -2,11 +2,6 @@ import os, distorm3
 
 const PATH = currentSourcePath.splitPath.head
 
-when defined(windows):
-  const FUNCHOOK_OS = "windows"
-else:
-  const FUNCHOOK_OS = "unix" 
-
 when hostCPU == "i386" or hostCPU == "amd64":
   const FUNCHOOK_CPU = "x86"
 #elif hostPCU = "arm64":
@@ -14,13 +9,20 @@ when hostCPU == "i386" or hostCPU == "amd64":
 else:
   {.error: "Unsupported CPU".}
 
+when defined(windows):
+  const FUNCHOOK_OS = "windows"
+  const FUNCHOOK_DEPS = "-lpsapi"
+else:
+  const FUNCHOOK_OS = "unix"
+  const FUNCHOOK_DEPS = ""
+
 {.passC: "-I " & PATH & "/private/include -I " & PATH & "/private/funchook/include".}
 {.passC: "-DDISASM_DISTORM=1 -DSIZEOF_VOID_P=" & $sizeof(int).}
-
 when FUNCHOOK_OS == "unix":
   {.passC: "-D_GNU_SOURCE -DGNU_SPECIFIC_STRERROR_R=1".}
-elif FUNCHOOK_OS == "windows":
-  {.passL: "-lpsapi".}
+
+{.passL: FUNCHOOK_DEPS.}
+
 
 {.compile: PATH & "/private/funchook/src/funchook.c".}
 {.compile: PATH & "/private/funchook/src/funchook_" & FUNCHOOK_CPU & ".c".}
