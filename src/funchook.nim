@@ -1,28 +1,34 @@
-import os
+import os, distorm3
 
-when defined(FUNCHOOK_DYNAMIC_LINK):
-  {.passL: "-lfunchook".}
+const PATH = currentSourcePath.splitPath.head
+
+when defined(windows):
+   const FUNCHOOK_OS = "windows"
+elif defined(linux):
+  const FUNCHOOK_OS = "unix"
 else:
-  const BASE_DIR = currentSourcePath().splitPath.head
-  when hostOS == "windows" and defined(mingw):
-    const
-      LIBS = "-lpsapi"
-      LIB_DIR = BASE_DIR & "/private/mingw"
+  {.error: "Unsupported OS".}
 
-  elif hostOS == "linux":
-    const
-      LIBS = ""
-      LIB_DIR = BASE_DIR & "/private/linux"
-  else:
-    {.error: "Unsupported OS".}
+when hostCPU == "i386" or hostCPU == "amd64":
+  const FUNCHOOK_CPU = "x86"
+#elif hostPCU = "arm64":
+#  const FUNCHOOK_CPU = "arm64"
+else:
+  {.error: "Unsupported CPU".}
 
+{.passC: "-I " & PATH & "/private/include -I " & PATH & "/private/funchook/include".}
+{.passC: "-DDISASM_DISTORM=1 -DSIZEOF_VOID_P=" & $sizeof(int).}
 
-  when hostCPU == "i386":
-    const SUFFIX = "32"
-  else:
-    const SUFFIX = "64"
+when FUNCHOOK_OS == "unix":
+  {.passC: "-D_GNU_SOURCE -DGNU_SPECIFIC_STRERROR_R=1".}
+elif FUNCHOOK_OS == "windows":
+  {.passL: "-lpsapi".}
 
-  {.passL: "-L" & LIB_DIR & " -lfunchook" & SUFFIX & " -ldistorm" & SUFFIX & " " & LIBS.}
+{.compile: PATH & "/private/funchook/src/funchook.c".}
+{.compile: PATH & "/private/funchook/src/funchook_" & FUNCHOOK_CPU & ".c".}
+{.compile: PATH & "/private/funchook/src/funchook_" & FUNCHOOK_OS & ".c".}
+{.compile: PATH & "/private/funchook/src/disasm_distorm.c".}
+
 
 {.pragma: fh, discardable, cdecl, importc.}
 
