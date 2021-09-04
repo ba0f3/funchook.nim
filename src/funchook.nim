@@ -3,19 +3,32 @@ import os
 when defined(FUNCHOOK_DYNAMIC_LINK):
   {.passL: "-lfunchook".}
 else:
-  const LIB_DIR = currentSourcePath().splitPath.head & "/private"
+  const BASE_DIR = currentSourcePath().splitPath.head
+  when hostOS == "windows" and defined(mingw):
+    const
+      LIBS = "-lpsapi"
+      LIB_DIR = BASE_DIR & "/private/mingw"
+
+  elif hostOS == "linux":
+    const
+      LIBS = ""
+      LIB_DIR = BASE_DIR & "/private/linux"
+  else:
+    {.error: "Unsupported OS".}
+
+
   when hostCPU == "i386":
     const SUFFIX = "32"
   else:
     const SUFFIX = "64"
-  {.passL: "-L" & LIB_DIR & " -lfunchook" & SUFFIX.}
+
+  {.passL: "-L" & LIB_DIR & " -lfunchook" & SUFFIX & " -ldistorm" & SUFFIX & " " & LIBS.}
 
 {.pragma: fh, discardable, cdecl, importc.}
 
 type
   funchook_t {.final, pure.} = object
   FuncHook* = ptr funchook_t
-
 
   FUNCHOOK_ERROR* = enum
     INTERNAL_ERROR = -1
