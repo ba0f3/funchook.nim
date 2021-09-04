@@ -1,4 +1,6 @@
 # funchook.nim
+![Build Status (github)](https://github.com/ba0f3/funchook.nim/workflows/Build/badge.svg) [![made-with-python](https://img.shields.io/badge/Made%20with-Nim-ffc200.svg)](https://nim-lang.org/)
+----------------
 [funchook](https://github.com/kubo/funchook) wrapper for [Nim](https://nim-lang.org)
 
 This wrapper compiles funchook with diStorm3 disassembler.
