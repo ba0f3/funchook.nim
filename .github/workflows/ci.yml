@@ -16,7 +16,6 @@ jobs:
           - stable
           - devel
           - 1.2.12
-          - 1.0.10
     name: ${{ matrix.os }} - ${{ matrix.nimversion }}
     runs-on: ${{ matrix.os }}
     env:
