@@ -64,7 +64,7 @@ proc funchook_set_debug_file*(name: cstring): FUNCHOOK_ERROR {.fh.} ## Set log f
 
 
 template initHook*(): FuncHook = funchook_create()
-template prepare*(fh: FuncHook, src: ptr auto, dst: pointer): FUNCHOOK_ERROR = funchook_prepare(fh, cast[ptr pointer](src), dst)
+template prepare*(fh: FuncHook, src: pointer, dst: pointer): FUNCHOOK_ERROR = funchook_prepare(fh, cast[ptr pointer](src), dst)
 template install*(fh: FuncHook, flags = 0): FUNCHOOK_ERROR = funchook_install(fh, flags)
 template uninstall*(fh: FuncHook, flags = 0): FUNCHOOK_ERROR = funchook_uninstall(fh, flags)
 template destroy*(fh: FuncHook): FUNCHOOK_ERROR = funchook_destroy(fh)
