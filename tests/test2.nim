@@ -26,5 +26,6 @@ rv = h.install(0)
 if rv != SUCCESS:
   echo h.errorMessage()
 
-var greating = "hello"
+var greating = "hello\n"
 greating.stripLineEnd
+echo greating
