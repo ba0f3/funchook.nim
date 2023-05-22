@@ -7,9 +7,9 @@ This wrapper compiles funchook with diStorm3 disassembler.
 
 Suports both x64 and x86-64 on:
 
-[x] Linux
-[x] Windows
-[ ] MacOS (not tested yet)
+- [x] Linux
+- [x] Windows
+- [ ] MacOS (not tested yet)
 
 ### Installation
 ```shell
