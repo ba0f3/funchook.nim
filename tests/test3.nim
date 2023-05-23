@@ -3,18 +3,10 @@ from strutils import stripLineEnd
 
 
 proc NI_stripLineEnd(s: var string) {.fptr, cdecl.} = stripLineEnd
-#type
-#  proc_NI_stripLineEnd_7525977214964708501 = proc (s: var string) {.cdecl.}
-#var var_NI_stripLineEnd_7525977214964708501 = cast[proc_NI_stripLineEnd_7525977214964708501](0x00000123)
-#proc NI_stripLineEnd(s: var string) {.inline.} =
-#  var_NI_stripLineEnd_7525977214964708501(s)
 
 proc stripLineEnd_hook(s: var string) {.gcsafe.} =
   echo "stripLineEnd_hook ", s
-  #NI_stripLineEnd(s)
-  #NI_stripLineEnd2(s)
-  #fptr_value_test3_NI_stripLineEnd(s)
-
+  NI_stripLineEnd(s)
 
 discard setDebugFile("funchook.log")
 
