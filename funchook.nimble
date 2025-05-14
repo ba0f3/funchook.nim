@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.5"
+version       = "0.1.6"
 author        = "Huy Doan"
 description   = "funchook wrapper"
 license       = "GPLv2"

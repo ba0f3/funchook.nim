@@ -1,4 +1,4 @@
-import os, distorm3
+import os
 
 const PATH = currentSourcePath.splitPath.head
 
@@ -17,15 +17,21 @@ else:
   const FUNCHOOK_DEPS = ""
 
 # flag SUPPORT_64BIT_OFFSET must set to force diStorm exports `distorm_decompose64` in 32bit mode
-{.passC: "-DSUPPORT_64BIT_OFFSET".}
-
-{.passC: "-I " & PATH & "/private/include -I " & PATH & "/private/funchook/include".}
-{.passC: "-DDISASM_DISTORM=1 -DSIZEOF_VOID_P=" & $sizeof(int).}
+{.passC: "-Wall -DSUPPORT_64BIT_OFFSET -DDISASM_DISTORM=1 -DSIZEOF_VOID_P=" & $sizeof(pointer).}
+{.passC: "-I " & PATH & "/private/include -I " & PATH & "/private/funchook/include -I " & PATH & "/private/funchook/distorm/include".}
 when FUNCHOOK_OS == "unix":
   {.passC: "-D_GNU_SOURCE -DGNU_SPECIFIC_STRERROR_R=1".}
 
 {.passL: FUNCHOOK_DEPS.}
 
+{.compile: PATH & "/private/funchook/distorm/src/decoder.c".}
+{.compile: PATH & "/private/funchook/distorm/src/distorm.c".}
+{.compile: PATH & "/private/funchook/distorm/src/instructions.c".}
+{.compile: PATH & "/private/funchook/distorm/src/insts.c".}
+{.compile: PATH & "/private/funchook/distorm/src/mnemonics.c".}
+{.compile: PATH & "/private/funchook/distorm/src/operands.c".}
+{.compile: PATH & "/private/funchook/distorm/src/prefix.c".}
+{.compile: PATH & "/private/funchook/distorm/src/textdefs.c".}
 {.compile: PATH & "/private/funchook/src/funchook.c".}
 {.compile: PATH & "/private/funchook/src/funchook_" & FUNCHOOK_CPU & ".c".}
 {.compile: PATH & "/private/funchook/src/funchook_" & FUNCHOOK_OS & ".c".}
